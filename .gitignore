@@ -1,0 +1,16 @@
+# Internal project reference (contains credentials info)
+PROJECT-INTERNAL.md
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node (if ever added)
+node_modules/
