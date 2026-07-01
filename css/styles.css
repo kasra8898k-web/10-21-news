@@ -180,6 +180,10 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
   .modal-content{padding:20px;border-radius:16px;margin:8px}
   .modal-overlay{padding:12px;align-items:flex-end}
 
+  /* --- ADMIN FORMS --- */
+  .admin-form-card{padding:16px !important;border-radius:16px !important}
+  .admin-form-card .space-y-5>div{margin-bottom:14px}
+
   /* --- MOBILE MENU --- */
   .mobile-menu{width:260px}
   .mobile-link{padding:14px 16px;min-height:44px;display:flex;align-items:center;font-size:15px}
@@ -190,22 +194,44 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
   /* --- TASK ROW --- */
   .task-row{padding:12px 14px}
 
-  /* --- TABLES (admin) --- */
-  .overflow-x-auto{-webkit-overflow-scrolling:touch}
-  table{min-width:600px}
-
   /* --- PROFILE --- */
   .profile-stats{grid-template-columns:1fr !important}
   .profile-card{padding:20px !important}
   .profile-header{flex-direction:column;text-align:center;gap:16px !important}
   .profile-avatar{width:64px !important;height:64px !important;font-size:1.5rem !important}
+
+  /* --- ADMIN: checkbox rows stack vertically --- */
+  .admin-checkbox-row{flex-direction:column !important;gap:12px !important}
+  .admin-checkbox-row .flex.items-center{width:100%}
+
+  /* --- ADMIN: form submit buttons full-width --- */
+  .admin-form-actions{flex-direction:column !important}
+  .admin-form-actions .btn{width:100%}
+
+  /* --- ADMIN: stat cards smaller text --- */
+  .admin-stat-num{font-size:1.5rem !important}
+
+  /* --- ADMIN: dashboard preview cards --- */
+  .admin-preview-card{padding:16px !important}
+
+  /* --- ADMIN: table converted to stacked cards --- */
+  .admin-table-wrap .overflow-x-auto{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .admin-table-wrap table{min-width:auto;width:100%}
+  .admin-table-wrap thead{display:none}
+  .admin-table-wrap tbody tr{display:flex;flex-direction:column;padding:14px 16px;border-bottom:1px solid #f3f4f6;background:#fff}
+  .admin-table-wrap tbody tr:last-child{border-bottom:none}
+  .admin-table-wrap tbody td{display:flex;align-items:center;justify-content:space-between;padding:4px 0;border:none;width:100%;text-align:left}
+  .admin-table-wrap tbody td:first-child{font-weight:600;font-size:15px}
+  .admin-table-wrap tbody td::before{font-size:11px;color:#9ca3af;font-weight:500;min-width:60px}
+  .admin-table-wrap .admin-row-actions{flex-wrap:wrap;gap:4px;justify-content:flex-start}
 }
 
 /* ========== ADMIN MOBILE HEADER ========== */
-.admin-mobile-header{display:none;position:sticky;top:0;z-index:90;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,.06);padding:12px 16px}
-.admin-mobile-header .max-w-6xl{display:flex;align-items:center;justify-content:space-between}
-.admin-mobile-header button{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;background:#1F2937;color:#fff;font-size:14px;font-weight:600;border:none;cursor:pointer;min-height:44px;font-family:inherit}
-.admin-mobile-header button svg{width:20px;height:20px}
+.admin-mobile-header{display:none;position:sticky;top:0;z-index:90;background:rgba(255,255,255,.95);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,.06);padding:10px 16px}
+.admin-mobile-header .max-w-6xl{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.admin-mobile-header button{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;background:#1F2937;color:#fff;font-size:13px;font-weight:600;border:none;cursor:pointer;min-height:44px;font-family:inherit;white-space:nowrap}
+.admin-mobile-header button svg{width:18px;height:18px;flex-shrink:0}
+.admin-mobile-header a{min-height:44px;display:flex;align-items:center;font-size:13px;text-decoration:none}
 .admin-sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 .admin-sidebar-overlay.open{display:block}
 @media(max-width:1023px){

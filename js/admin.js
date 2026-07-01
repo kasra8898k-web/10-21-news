@@ -9,41 +9,41 @@ const Admin = {
       <div class="flex-1 p-4 sm:p-6 md:p-8">
         <div class="max-w-6xl">
           <h1 class="text-xl sm:text-2xl font-black mb-6">داشبورد مدیریت</h1>
-          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8 stagger">
-            <div class="bg-white rounded-xl p-4 shadow-sm text-center">
-              <p class="text-3xl font-black text-red-500">${stats.totalNews}</p>
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mb-8 stagger">
+            <div class="bg-white rounded-xl p-3 md:p-4 shadow-sm text-center">
+              <p class="admin-stat-num text-3xl font-black text-red-500">${stats.totalNews}</p>
               <p class="text-xs text-gray-500 mt-1">اخبار</p>
             </div>
-            <div class="bg-white rounded-xl p-4 shadow-sm text-center">
-              <p class="text-3xl font-black text-red-500">${stats.totalTasks}</p>
+            <div class="bg-white rounded-xl p-3 md:p-4 shadow-sm text-center">
+              <p class="admin-stat-num text-3xl font-black text-red-500">${stats.totalTasks}</p>
               <p class="text-xs text-gray-500 mt-1">تکالیف</p>
             </div>
-            <div class="bg-white rounded-xl p-4 shadow-sm text-center">
-              <p class="text-3xl font-black text-red-500">${stats.totalUsers}</p>
+            <div class="bg-white rounded-xl p-3 md:p-4 shadow-sm text-center">
+              <p class="admin-stat-num text-3xl font-black text-red-500">${stats.totalUsers}</p>
               <p class="text-xs text-gray-500 mt-1">کاربران</p>
             </div>
-            <div class="bg-white rounded-xl p-4 shadow-sm text-center">
-              <p class="text-3xl font-black text-red-500">${stats.totalComments}</p>
+            <div class="bg-white rounded-xl p-3 md:p-4 shadow-sm text-center">
+              <p class="admin-stat-num text-3xl font-black text-red-500">${stats.totalComments}</p>
               <p class="text-xs text-gray-500 mt-1">نظرات</p>
             </div>
-            <div class="bg-white rounded-xl p-4 shadow-sm text-center">
-              <p class="text-3xl font-black text-orange-500">${stats.pendingComments}</p>
+            <div class="bg-white rounded-xl p-3 md:p-4 shadow-sm text-center">
+              <p class="admin-stat-num text-3xl font-black text-orange-500">${stats.pendingComments}</p>
               <p class="text-xs text-gray-500 mt-1">نظرات در انتظار</p>
             </div>
-            <div class="bg-white rounded-xl p-4 shadow-sm text-center">
-              <p class="text-3xl font-black text-gray-400">${stats.bannedUsers}</p>
+            <div class="bg-white rounded-xl p-3 md:p-4 shadow-sm text-center">
+              <p class="admin-stat-num text-3xl font-black text-gray-400">${stats.bannedUsers}</p>
               <p class="text-xs text-gray-500 mt-1">مسدود شده</p>
             </div>
           </div>
-          <div class="grid md:grid-cols-2 gap-6">
-            <div class="bg-white rounded-xl p-6 shadow-sm">
+          <div class="grid md:grid-cols-2 gap-4 md:gap-6">
+            <div class="admin-preview-card bg-white rounded-xl p-6 shadow-sm">
               <h3 class="font-bold mb-4 flex items-center gap-2">
                 <span class="w-2 h-2 bg-orange-500 rounded-full pulse-dot"></span>
                 آخرین نظرات در انتظار تأیید
               </h3>
               ${this._pendingCommentsPreview()}
             </div>
-            <div class="bg-white rounded-xl p-6 shadow-sm">
+            <div class="admin-preview-card bg-white rounded-xl p-6 shadow-sm">
               <h3 class="font-bold mb-4">آخرین اخبار</h3>
               ${this._latestNewsPreview()}
             </div>
@@ -97,7 +97,7 @@ const Admin = {
       <div class="flex-1 p-4 sm:p-6 md:p-8">
         <div class="max-w-3xl">
           <h1 class="text-xl sm:text-2xl font-black mb-6">افزودن خبر جدید</h1>
-          <form onsubmit="Admin.handleSaveNews(event)" class="bg-white rounded-2xl p-6 shadow-sm space-y-5">
+          <form onsubmit="Admin.handleSaveNews(event)" class="admin-form-card bg-white rounded-2xl p-6 shadow-sm space-y-5">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">عنوان خبر</label>
               <input type="text" id="newsTitle" class="input input-lg" placeholder="عنوان خبر را وارد کنید" required>
@@ -127,19 +127,19 @@ const Admin = {
               <label class="block text-sm font-medium text-gray-700 mb-1">متن کامل</label>
               <textarea id="newsContent" class="input" rows="10" placeholder="متن کامل خبر..." required></textarea>
             </div>
-            <div class="flex items-center gap-6">
+            <div class="admin-checkbox-row flex items-center gap-6">
               <div class="flex items-center gap-2">
-                <input type="checkbox" id="newsImportant" class="w-4 h-4 text-red-500 rounded">
+                <input type="checkbox" id="newsImportant" class="w-5 h-5 text-red-500 rounded">
                 <label for="newsImportant" class="text-sm font-medium text-gray-700">مهم (نمایش در بخش اخبار مهم)</label>
               </div>
               <div class="flex items-center gap-2">
-                <input type="checkbox" id="newsBreaking" class="w-4 h-4 rounded" style="accent-color:#CA8A04">
+                <input type="checkbox" id="newsBreaking" class="w-5 h-5 rounded" style="accent-color:#CA8A04">
                 <label for="newsBreaking" class="text-sm font-medium text-gray-700" style="color:#CA8A04">خبر فوری (نمایش با برچسب زرد)</label>
               </div>
             </div>
-            <div class="flex gap-3 pt-2">
+            <div class="admin-form-actions flex gap-3 pt-2">
               <button type="submit" class="btn btn-red btn-lg">انتشار خبر</button>
-              <a href="#/admin" class="btn btn-outline btn-lg">انصراف</a>
+              <a href="#/admin" class="btn btn-outline btn-lg" style="color:#374151;border-color:#E5E7EB;background:transparent">انصراف</a>
             </div>
           </form>
         </div>
@@ -176,7 +176,7 @@ const Admin = {
       <div class="flex-1 p-4 sm:p-6 md:p-8">
         <div class="max-w-3xl">
           <h1 class="text-xl sm:text-2xl font-black mb-6">افزودن تکلیف جدید</h1>
-          <form onsubmit="Admin.handleSaveTask(event)" class="bg-white rounded-2xl p-6 shadow-sm space-y-5">
+          <form onsubmit="Admin.handleSaveTask(event)" class="admin-form-card bg-white rounded-2xl p-6 shadow-sm space-y-5">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">عنوان تکلیف</label>
               <input type="text" id="taskTitle" class="input input-lg" placeholder="عنوان تکلیف را وارد کنید" required>
@@ -206,19 +206,19 @@ const Admin = {
               <label class="block text-sm font-medium text-gray-700 mb-1">توضیحات کامل</label>
               <textarea id="taskContent" class="input" rows="10" placeholder="توضیحات کامل تکلیف..." required></textarea>
             </div>
-            <div class="flex items-center gap-6">
+            <div class="admin-checkbox-row flex items-center gap-6">
               <div class="flex items-center gap-2">
-                <input type="checkbox" id="taskImportant" class="w-4 h-4 text-red-500 rounded">
+                <input type="checkbox" id="taskImportant" class="w-5 h-5 text-red-500 rounded">
                 <label for="taskImportant" class="text-sm font-medium text-gray-700">مهم</label>
               </div>
               <div class="flex items-center gap-2">
-                <input type="checkbox" id="taskBreaking" class="w-4 h-4 rounded" style="accent-color:#CA8A04">
+                <input type="checkbox" id="taskBreaking" class="w-5 h-5 rounded" style="accent-color:#CA8A04">
                 <label for="taskBreaking" class="text-sm font-medium text-gray-700" style="color:#CA8A04">خبر فوری</label>
               </div>
             </div>
-            <div class="flex gap-3 pt-2">
+            <div class="admin-form-actions flex gap-3 pt-2">
               <button type="submit" class="btn btn-red btn-lg">انتشار تکلیف</button>
-              <a href="#/admin" class="btn btn-outline btn-lg">انصراف</a>
+              <a href="#/admin" class="btn btn-outline btn-lg" style="color:#374151;border-color:#E5E7EB;background:transparent">انصراف</a>
             </div>
           </form>
         </div>
@@ -258,7 +258,7 @@ const Admin = {
             <h1 class="text-xl sm:text-2xl font-black">مدیریت کاربران</h1>
             <button onclick="Admin.showAddAdmin()" class="btn btn-red btn-sm">افزودن مدیر</button>
           </div>
-          <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <div class="bg-white rounded-2xl shadow-sm overflow-hidden admin-table-wrap">
             <div class="overflow-x-auto">
               <table class="w-full text-sm">
                 <thead>
@@ -273,23 +273,23 @@ const Admin = {
                 </thead>
                 <tbody>
                   ${users.map(u => `
-                    <tr class="border-b last:border-0 hover:bg-gray-50 transition-colors">
-                      <td class="px-4 py-3">
+                    <tr class="border-b last:border-0">
+                      <td class="px-4 py-3" data-label="نام">
                         <div class="flex items-center gap-2">
                           <div class="w-8 h-8 rounded-full ${u.role === 'admin' ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'} flex items-center justify-center font-bold text-xs">${u.fullName.charAt(0)}</div>
                           <span class="font-medium">${Utils.escapeHtml(u.fullName)}</span>
                         </div>
                       </td>
-                      <td class="px-4 py-3 text-gray-500">@${Utils.escapeHtml(u.username)}</td>
-                      <td class="px-4 py-3">
+                      <td class="px-4 py-3 text-gray-500" data-label="نام کاربری">@${Utils.escapeHtml(u.username)}</td>
+                      <td class="px-4 py-3" data-label="نقش">
                         <span class="badge ${u.role === 'admin' ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'}">${u.role === 'admin' ? 'مدیر' : 'کاربر'}</span>
                       </td>
-                      <td class="px-4 py-3 text-gray-400 text-xs">${Utils.persianDate(u.createdAt)}</td>
-                      <td class="px-4 py-3">
+                      <td class="px-4 py-3 text-gray-400 text-xs" data-label="تاریخ">${Utils.persianDate(u.createdAt)}</td>
+                      <td class="px-4 py-3" data-label="وضعیت">
                         ${u.banned ? '<span class="badge bg-red-100 text-red-600">مسدود</span>' : '<span class="badge bg-green-100 text-green-600">فعال</span>'}
                       </td>
-                      <td class="px-4 py-3">
-                        <div class="flex items-center gap-1">
+                      <td class="px-4 py-3" data-label="عملیات">
+                        <div class="admin-row-actions flex items-center gap-1">
                           ${u.id !== Auth.getCurrentUser().id ? `
                             <button onclick="Admin.toggleBan('${u.id}')" class="btn btn-ghost btn-sm text-xs ${u.banned ? 'text-green-500' : 'text-red-500'}">${u.banned ? 'رفع مسدودی' : 'مسدود کردن'}</button>
                             ${u.role !== 'admin' ? `<button onclick="Admin.toggleComment('${u.id}')" class="btn btn-ghost btn-sm text-xs ${u.canComment === false ? 'text-green-500' : 'text-orange-500'}">${u.canComment === false ? 'فعال کردن نظر' : 'غیرفعال کردن نظر'}</button>` : ''}
@@ -425,7 +425,7 @@ const Admin = {
             <h1 class="text-xl sm:text-2xl font-black">مدیریت اخبار</h1>
             <a href="#/admin/news/new" class="btn btn-red btn-sm">افزودن خبر</a>
           </div>
-          <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <div class="bg-white rounded-2xl shadow-sm overflow-hidden admin-table-wrap">
             <div class="overflow-x-auto">
               <table class="w-full text-sm">
                 <thead>
@@ -439,19 +439,19 @@ const Admin = {
                 </thead>
                 <tbody>
                   ${news.map(n => `
-                    <tr class="border-b last:border-0 hover:bg-gray-50 transition-colors">
-                      <td class="px-4 py-3 font-medium max-w-xs truncate">${Utils.escapeHtml(n.title)}</td>
-                      <td class="px-4 py-3"><span class="badge text-xs" style="background:${Utils.getCategoryColor(n.category).bg};color:${Utils.getCategoryColor(n.category).text}">${n.category}</span></td>
-                      <td class="px-4 py-3">
+                    <tr class="border-b last:border-0">
+                      <td class="px-4 py-3 font-medium max-w-xs truncate" data-label="عنوان">${Utils.escapeHtml(n.title)}</td>
+                      <td class="px-4 py-3" data-label="دسته"><span class="badge text-xs" style="background:${Utils.getCategoryColor(n.category).bg};color:${Utils.getCategoryColor(n.category).text}">${n.category}</span></td>
+                      <td class="px-4 py-3" data-label="وضعیت">
                         <div class="flex gap-1">
                           ${n.isImportant ? '<span class="badge bg-red-100 text-red-600 text-xs">مهم</span>' : ''}
                           ${n.isBreaking ? '<span class="badge text-xs" style="background:#FEF3C7;color:#92400E">فوری</span>' : ''}
                           ${!n.isImportant && !n.isBreaking ? '<span class="badge bg-gray-100 text-gray-500 text-xs">عادی</span>' : ''}
                         </div>
                       </td>
-                      <td class="px-4 py-3 text-gray-400 text-xs">${Utils.persianDate(n.createdAt)}</td>
-                      <td class="px-4 py-3">
-                        <div class="flex gap-1">
+                      <td class="px-4 py-3 text-gray-400 text-xs" data-label="تاریخ">${Utils.persianDate(n.createdAt)}</td>
+                      <td class="px-4 py-3" data-label="عملیات">
+                        <div class="admin-row-actions flex gap-1">
                           <a href="#/news/${n.id}" class="btn btn-ghost btn-sm text-xs text-blue-500">مشاهده</a>
                           <button onclick="Admin.deleteItem('news', '${n.id}')" class="btn btn-ghost btn-sm text-xs text-red-500">حذف</button>
                         </div>
@@ -481,7 +481,7 @@ const Admin = {
             <h1 class="text-xl sm:text-2xl font-black">مدیریت تکالیف</h1>
             <a href="#/admin/tasks/new" class="btn btn-red btn-sm">افزودن تکلیف</a>
           </div>
-          <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <div class="bg-white rounded-2xl shadow-sm overflow-hidden admin-table-wrap">
             <div class="overflow-x-auto">
               <table class="w-full text-sm">
                 <thead>
@@ -495,19 +495,19 @@ const Admin = {
                 </thead>
                 <tbody>
                   ${tasks.map(t => `
-                    <tr class="border-b last:border-0 hover:bg-gray-50 transition-colors">
-                      <td class="px-4 py-3 font-medium max-w-xs truncate">${Utils.escapeHtml(t.title)}</td>
-                      <td class="px-4 py-3"><span class="badge text-xs" style="background:${Utils.getCategoryColor(t.category).bg};color:${Utils.getCategoryColor(t.category).text}">${t.category}</span></td>
-                      <td class="px-4 py-3">
+                    <tr class="border-b last:border-0">
+                      <td class="px-4 py-3 font-medium max-w-xs truncate" data-label="عنوان">${Utils.escapeHtml(t.title)}</td>
+                      <td class="px-4 py-3" data-label="دسته"><span class="badge text-xs" style="background:${Utils.getCategoryColor(t.category).bg};color:${Utils.getCategoryColor(t.category).text}">${t.category}</span></td>
+                      <td class="px-4 py-3" data-label="وضعیت">
                         <div class="flex gap-1">
                           ${t.isImportant ? '<span class="badge bg-red-100 text-red-600 text-xs">مهم</span>' : ''}
                           ${t.isBreaking ? '<span class="badge text-xs" style="background:#FEF3C7;color:#92400E">فوری</span>' : ''}
                           ${!t.isImportant && !t.isBreaking ? '<span class="badge bg-gray-100 text-gray-500 text-xs">عادی</span>' : ''}
                         </div>
                       </td>
-                      <td class="px-4 py-3 text-gray-400 text-xs">${Utils.persianDate(t.createdAt)}</td>
-                      <td class="px-4 py-3">
-                        <div class="flex gap-1">
+                      <td class="px-4 py-3 text-gray-400 text-xs" data-label="تاریخ">${Utils.persianDate(t.createdAt)}</td>
+                      <td class="px-4 py-3" data-label="عملیات">
+                        <div class="admin-row-actions flex gap-1">
                           <a href="#/tasks/${t.id}" class="btn btn-ghost btn-sm text-xs text-blue-500">مشاهده</a>
                           <button onclick="Admin.deleteItem('tasks', '${t.id}')" class="btn btn-ghost btn-sm text-xs text-red-500">حذف</button>
                         </div>
