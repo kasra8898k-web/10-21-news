@@ -459,27 +459,27 @@ const Pages = {
     const myComments = Store.getAll('comments').filter(c => c.userId === user.id);
     this.render(`
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-8 mb-8 slide-up border border-gray-100" style="box-shadow:0 1px 3px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.03)">
-        <div class="flex items-center gap-5 mb-8">
-          <div class="w-20 h-20 rounded-2xl flex items-center justify-center font-black text-3xl" style="background:linear-gradient(135deg,rgba(200,16,46,.08),rgba(200,16,46,.18));color:#C8102E">${user.fullName.charAt(0)}</div>
+      <div class="profile-card bg-white/80 backdrop-blur-sm rounded-2xl p-8 mb-8 slide-up border border-gray-100" style="box-shadow:0 1px 3px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.03)">
+        <div class="profile-header flex items-center gap-5 mb-8">
+          <div class="profile-avatar w-20 h-20 rounded-2xl flex items-center justify-center font-black text-3xl" style="background:linear-gradient(135deg,rgba(200,16,46,.08),rgba(200,16,46,.18));color:#C8102E">${user.fullName.charAt(0)}</div>
           <div>
-            <h1 class="text-2xl font-black">${Utils.escapeHtml(user.fullName)}</h1>
+            <h1 class="text-xl sm:text-2xl font-black">${Utils.escapeHtml(user.fullName)}</h1>
             <p class="text-gray-500 mt-0.5">@${Utils.escapeHtml(user.username)}</p>
             <span class="badge mt-2 ${user.role === 'admin' ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'}">${user.role === 'admin' ? 'مدیر' : 'کاربر'}</span>
           </div>
         </div>
-        <div class="grid grid-cols-3 gap-4 text-center border-t border-gray-100 pt-6">
+        <div class="profile-stats grid grid-cols-3 gap-4 text-center border-t border-gray-100 pt-6">
           <div>
-            <p class="text-2xl font-black text-red-500">${myNews.length}</p>
-            <p class="text-sm text-gray-500">اخبار</p>
+            <p class="text-xl sm:text-2xl font-black text-red-500">${myNews.length}</p>
+            <p class="text-xs sm:text-sm text-gray-500">اخبار</p>
           </div>
           <div>
-            <p class="text-2xl font-black text-red-500">${myComments.length}</p>
-            <p class="text-sm text-gray-500">نظرات</p>
+            <p class="text-xl sm:text-2xl font-black text-red-500">${myComments.length}</p>
+            <p class="text-xs sm:text-sm text-gray-500">نظرات</p>
           </div>
           <div>
-            <p class="text-2xl font-black text-red-500">${Utils.persianDate(user.createdAt)}</p>
-            <p class="text-sm text-gray-500">تاریخ عضویت</p>
+            <p class="text-xl sm:text-2xl font-black text-red-500">${Utils.persianDate(user.createdAt)}</p>
+            <p class="text-xs sm:text-sm text-gray-500">تاریخ عضویت</p>
           </div>
         </div>
       </div>

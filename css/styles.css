@@ -124,10 +124,90 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
 .prose p{margin-bottom:1em}
 .line-clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 
-/* ========== RESPONSIVE ========== */
-@media(max-width:1023px){.admin-sidebar{display:none}}
+/* ========== RESPONSIVE — TABLET (≤1024px) ========== */
+@media(max-width:1023px){
+  .admin-sidebar{position:fixed;top:0;right:0;z-index:201;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);box-shadow:-4px 0 24px rgba(0,0,0,.2);width:260px;display:block !important}
+  .admin-sidebar.open{transform:translateX(0)}
+  .admin-sidebar a{min-height:44px;padding:12px 14px}
+}
+
+/* ========== RESPONSIVE — MOBILE (≤768px) ========== */
 @media(max-width:768px){
-  .hero-gradient{padding-top:3rem;padding-bottom:3rem}
-  .important-card{flex-direction:column;text-align:center;padding:20px}
-  .important-icon{width:48px;height:48px}
+  /* --- HERO --- */
+  .hero-gradient{padding-top:2.5rem;padding-bottom:2.5rem}
+  .hero-floating{display:none}
+
+  /* --- TOAST --- */
+  .toast{max-width:calc(100vw - 32px);white-space:normal;text-align:center;font-size:13px;padding:10px 18px}
+
+  /* --- NAVBAR --- */
+  .navbar .max-w-7xl{padding-left:12px;padding-right:12px}
+  .nav-link{padding:6px 10px;font-size:13px}
+
+  /* --- CARDS --- */
+  .card-hover:hover{transform:none;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+
+  /* --- IMPORTANT CARDS --- */
+  .important-card{flex-direction:column;text-align:center;padding:16px;gap:10px}
+  .important-card:hover{transform:none}
+  .important-icon{width:44px;height:44px;border-radius:12px}
+  .important-icon svg{width:18px;height:18px}
+
+  /* --- SIDEBAR CARD (homepage) --- */
+  .sidebar-card{position:static !important;backdrop-filter:none;-webkit-backdrop-filter:none}
+
+  /* --- SECTION HEADERS --- */
+  .section-label{font-size:1rem;gap:6px}
+  .section-label::before{height:20px}
+
+  /* --- BADGES --- */
+  .badge{font-size:10px;padding:2px 8px}
+
+  /* --- BUTTONS --- */
+  .btn{min-height:44px;font-size:14px}
+  .btn-sm{min-height:36px;font-size:12px;padding:6px 14px}
+  .btn-lg{min-height:48px;font-size:15px;padding:12px 20px}
+
+  /* --- INPUTS --- */
+  .input{font-size:16px;padding:12px 14px}
+  .input-lg{padding:14px 16px}
+  select.input{padding-left:32px}
+
+  /* --- DROP ZONE --- */
+  .drop-zone{padding:24px 16px}
+
+  /* --- MODAL --- */
+  .modal-content{padding:20px;border-radius:16px;margin:8px}
+  .modal-overlay{padding:12px;align-items:flex-end}
+
+  /* --- MOBILE MENU --- */
+  .mobile-menu{width:260px}
+  .mobile-link{padding:14px 16px;min-height:44px;display:flex;align-items:center;font-size:15px}
+
+  /* --- ANIMATIONS --- */
+  .stagger>*:nth-child(n){animation-delay:0s}
+
+  /* --- TASK ROW --- */
+  .task-row{padding:12px 14px}
+
+  /* --- TABLES (admin) --- */
+  .overflow-x-auto{-webkit-overflow-scrolling:touch}
+  table{min-width:600px}
+
+  /* --- PROFILE --- */
+  .profile-stats{grid-template-columns:1fr !important}
+  .profile-card{padding:20px !important}
+  .profile-header{flex-direction:column;text-align:center;gap:16px !important}
+  .profile-avatar{width:64px !important;height:64px !important;font-size:1.5rem !important}
+}
+
+/* ========== ADMIN MOBILE HEADER ========== */
+.admin-mobile-header{display:none;position:sticky;top:0;z-index:90;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,.06);padding:12px 16px}
+.admin-mobile-header .max-w-6xl{display:flex;align-items:center;justify-content:space-between}
+.admin-mobile-header button{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;background:#1F2937;color:#fff;font-size:14px;font-weight:600;border:none;cursor:pointer;min-height:44px;font-family:inherit}
+.admin-mobile-header button svg{width:20px;height:20px}
+.admin-sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.admin-sidebar-overlay.open{display:block}
+@media(max-width:1023px){
+  .admin-mobile-header{display:block}
 }

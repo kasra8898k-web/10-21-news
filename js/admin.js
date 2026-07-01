@@ -3,11 +3,12 @@ const Admin = {
     if (!Auth.requireAdmin()) return;
     const stats = Store.getStats();
     Pages.render(`
+    ${this._mobileHeader()}
     <div class="flex min-h-screen">
       ${this._sidebar('dashboard')}
-      <div class="flex-1 p-6 md:p-8">
+      <div class="flex-1 p-4 sm:p-6 md:p-8">
         <div class="max-w-6xl">
-          <h1 class="text-2xl font-black mb-6">داشبورد مدیریت</h1>
+          <h1 class="text-xl sm:text-2xl font-black mb-6">داشبورد مدیریت</h1>
           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8 stagger">
             <div class="bg-white rounded-xl p-4 shadow-sm text-center">
               <p class="text-3xl font-black text-red-500">${stats.totalNews}</p>
@@ -90,11 +91,12 @@ const Admin = {
     if (!Auth.requireAdmin()) return;
     window.image_newsImg = null;
     Pages.render(`
+    ${this._mobileHeader()}
     <div class="flex min-h-screen">
       ${this._sidebar('add-news')}
-      <div class="flex-1 p-6 md:p-8">
+      <div class="flex-1 p-4 sm:p-6 md:p-8">
         <div class="max-w-3xl">
-          <h1 class="text-2xl font-black mb-6">افزودن خبر جدید</h1>
+          <h1 class="text-xl sm:text-2xl font-black mb-6">افزودن خبر جدید</h1>
           <form onsubmit="Admin.handleSaveNews(event)" class="bg-white rounded-2xl p-6 shadow-sm space-y-5">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">عنوان خبر</label>
@@ -168,11 +170,12 @@ const Admin = {
     if (!Auth.requireAdmin()) return;
     window.image_taskImg = null;
     Pages.render(`
+    ${this._mobileHeader()}
     <div class="flex min-h-screen">
       ${this._sidebar('add-task')}
-      <div class="flex-1 p-6 md:p-8">
+      <div class="flex-1 p-4 sm:p-6 md:p-8">
         <div class="max-w-3xl">
-          <h1 class="text-2xl font-black mb-6">افزودن تکلیف جدید</h1>
+          <h1 class="text-xl sm:text-2xl font-black mb-6">افزودن تکلیف جدید</h1>
           <form onsubmit="Admin.handleSaveTask(event)" class="bg-white rounded-2xl p-6 shadow-sm space-y-5">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">عنوان تکلیف</label>
@@ -246,12 +249,13 @@ const Admin = {
     if (!Auth.requireAdmin()) return;
     const users = Store.getAll('users');
     Pages.render(`
+    ${this._mobileHeader()}
     <div class="flex min-h-screen">
       ${this._sidebar('users')}
-      <div class="flex-1 p-6 md:p-8">
+      <div class="flex-1 p-4 sm:p-6 md:p-8">
         <div class="max-w-5xl">
           <div class="flex items-center justify-between mb-6">
-            <h1 class="text-2xl font-black">مدیریت کاربران</h1>
+            <h1 class="text-xl sm:text-2xl font-black">مدیریت کاربران</h1>
             <button onclick="Admin.showAddAdmin()" class="btn btn-red btn-sm">افزودن مدیر</button>
           </div>
           <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
@@ -365,11 +369,12 @@ const Admin = {
     if (!Auth.requireAdmin()) return;
     const allComments = Store.getAll('comments').sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     Pages.render(`
+    ${this._mobileHeader()}
     <div class="flex min-h-screen">
       ${this._sidebar('comments')}
-      <div class="flex-1 p-6 md:p-8">
+      <div class="flex-1 p-4 sm:p-6 md:p-8">
         <div class="max-w-5xl">
-          <h1 class="text-2xl font-black mb-6">مدیریت نظرات</h1>
+          <h1 class="text-xl sm:text-2xl font-black mb-6">مدیریت نظرات</h1>
           <div class="space-y-3 stagger">
             ${allComments.length === 0 ? Components.emptyState('نظری ثبت نشده است.') :
               allComments.map(c => {
@@ -411,12 +416,13 @@ const Admin = {
     if (!Auth.requireAdmin()) return;
     const news = Store.getAll('news').sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     Pages.render(`
+    ${this._mobileHeader()}
     <div class="flex min-h-screen">
       ${this._sidebar('admin-news')}
-      <div class="flex-1 p-6 md:p-8">
+      <div class="flex-1 p-4 sm:p-6 md:p-8">
         <div class="max-w-5xl">
           <div class="flex items-center justify-between mb-6">
-            <h1 class="text-2xl font-black">مدیریت اخبار</h1>
+            <h1 class="text-xl sm:text-2xl font-black">مدیریت اخبار</h1>
             <a href="#/admin/news/new" class="btn btn-red btn-sm">افزودن خبر</a>
           </div>
           <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
@@ -466,12 +472,13 @@ const Admin = {
     if (!Auth.requireAdmin()) return;
     const tasks = Store.getAll('tasks').sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     Pages.render(`
+    ${this._mobileHeader()}
     <div class="flex min-h-screen">
       ${this._sidebar('admin-tasks')}
-      <div class="flex-1 p-6 md:p-8">
+      <div class="flex-1 p-4 sm:p-6 md:p-8">
         <div class="max-w-5xl">
           <div class="flex items-center justify-between mb-6">
-            <h1 class="text-2xl font-black">مدیریت تکالیف</h1>
+            <h1 class="text-xl sm:text-2xl font-black">مدیریت تکالیف</h1>
             <a href="#/admin/tasks/new" class="btn btn-red btn-sm">افزودن تکلیف</a>
           </div>
           <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
@@ -528,7 +535,7 @@ const Admin = {
   // ---- SIDEBAR ----
   _sidebar(active) {
     return `
-    <div class="admin-sidebar w-64 flex-shrink-0 hidden lg:block">
+    <div id="adminSidebar" class="admin-sidebar w-64 flex-shrink-0 hidden lg:block">
       <div class="p-4 border-b border-gray-700">
         <a href="#/home" class="flex items-center gap-2">
           <div class="logo">
@@ -575,6 +582,30 @@ const Admin = {
         </a>
       </nav>
     </div>`;
+  },
+
+  _mobileHeader() {
+    return `
+    <div class="admin-mobile-header" id="adminMobileHeader">
+      <div class="max-w-6xl mx-auto">
+        <button onclick="Admin.openSidebar()">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+          فهرست مدیریت
+        </button>
+        <a href="#/home" class="text-sm text-gray-500 hover:text-red-500 transition-colors">بازگشت به سایت</a>
+      </div>
+    </div>
+    <div id="adminSidebarOverlay" class="admin-sidebar-overlay" onclick="Admin.closeSidebar()"></div>`;
+  },
+
+  openSidebar() {
+    document.getElementById('adminSidebar').classList.add('open');
+    document.getElementById('adminSidebarOverlay').classList.add('open');
+  },
+
+  closeSidebar() {
+    document.getElementById('adminSidebar').classList.remove('open');
+    document.getElementById('adminSidebarOverlay').classList.remove('open');
   },
 
   _pendingCommentsPreview() {
