@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="۱۰.۲۱ نیوز - پایگاه خبری و تکالیف جامع و به‌روز">
+  <meta name="theme-color" content="#C8102E">
+  <meta property="og:title" content="۱۰.۲۱ نیوز | 10.21 NEWS">
+  <meta property="og:description" content="پایگاه خبری و تکالیف جامع و به‌روز">
+  <meta property="og:type" content="website">
+  <title>۱۰.۲۱ نیوز | 10.21 NEWS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="css/styles.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            red: {
+              50: '#fef2f2', 100: '#fee2e2', 200: '#fecaca', 300: '#fca5a5',
+              400: '#f87171', 500: '#C8102E', 600: '#A50D24',
+              700: '#8B0B1E', 800: '#6B0917', 900: '#4A0610'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="app">
+    <div class="min-h-screen flex items-center justify-center">
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/pages.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/app.js"></script>
+
+  <script>
+    document.addEventListener('click', (e) => {
+      const dropdown = e.target.closest('.dropdown');
+      if (!dropdown) {
+        document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.add('hidden'));
+      }
+    });
+  </script>
+</body>
+</html>
