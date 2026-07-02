@@ -1,8 +1,15 @@
 const Admin = {
-  dashboard() {
-    if (!Auth.requireAdmin()) return;
-    const stats = Store.getStats();
-    Pages.render(`
+  async dashboard() {
+    if (!(await Auth.requireAdmin())) return;
+    const [stats, pending, latestNews] = await Promise.all([
+      Store.getStats(),
+      Store.getPendingComments(),
+      Store.getAll('news')
+    ]);
+    latestNews.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    const topNews = latestNews.slice(0, 5);
+
+    await Pages.renderWithNav(`
     ${this._mobileHeader()}
     <div class="flex min-h-screen">
       ${this._sidebar('dashboard')}
@@ -41,11 +48,11 @@ const Admin = {
                 <span class="w-2 h-2 bg-orange-500 rounded-full pulse-dot"></span>
                 آخرین نظرات در انتظار تأیید
               </h3>
-              ${this._pendingCommentsPreview()}
+              ${this._pendingCommentsPreview(pending)}
             </div>
             <div class="admin-preview-card bg-white rounded-xl p-6 shadow-sm">
               <h3 class="font-bold mb-4">آخرین اخبار</h3>
-              ${this._latestNewsPreview()}
+              ${this._latestNewsPreview(topNews)}
             </div>
           </div>
         </div>
@@ -87,10 +94,10 @@ const Admin = {
   },
 
   // ---- ADD NEWS ----
-  addNews() {
-    if (!Auth.requireAdmin()) return;
+  async addNews() {
+    if (!(await Auth.requireAdmin())) return;
     window.image_newsImg = null;
-    Pages.render(`
+    await Pages.renderWithNav(`
     ${this._mobileHeader()}
     <div class="flex min-h-screen">
       ${this._sidebar('add-news')}
@@ -148,28 +155,32 @@ const Admin = {
     setTimeout(() => Components.initDragDrop('newsImg'), 100);
   },
 
-  handleSaveNews(e) {
+  async handleSaveNews(e) {
     e.preventDefault();
-    const user = Auth.getCurrentUser();
+    const user = await Auth.getCurrentUser();
     const title = document.getElementById('newsTitle').value.trim();
     const content = document.getElementById('newsContent').value.trim();
     const excerpt = document.getElementById('newsExcerpt').value.trim();
     const category = document.getElementById('newsCategory').value;
-    const isImportant = document.getElementById('newsImportant').checked;
-    const isBreaking = document.getElementById('newsBreaking').checked;
+    const is_important = document.getElementById('newsImportant').checked;
+    const is_breaking = document.getElementById('newsBreaking').checked;
     const imageUrl = document.getElementById('newsImageUrl').value.trim();
     const image = imageUrl || window.image_newsImg || '';
     if (!title || !content) { Utils.showToast('عنوان و متن الزامی هستند', 'error'); return; }
-    Store.create('news', { title, content, excerpt, category, isImportant, isBreaking, image, authorId: user.id });
-    Utils.showToast('خبر با موفقیت منتشر شد', 'success');
-    location.hash = '#/admin/news-list';
+    try {
+      await Store.create('news', { title, content, excerpt, category, is_important, is_breaking, image, author_id: user.id });
+      Utils.showToast('خبر با موفقیت منتشر شد', 'success');
+      location.hash = '#/admin/news-list';
+    } catch (err) {
+      Utils.showToast('خطا در ذخیره خبر: ' + err.message, 'error');
+    }
   },
 
   // ---- ADD TASK ----
-  addTask() {
-    if (!Auth.requireAdmin()) return;
+  async addTask() {
+    if (!(await Auth.requireAdmin())) return;
     window.image_taskImg = null;
-    Pages.render(`
+    await Pages.renderWithNav(`
     ${this._mobileHeader()}
     <div class="flex min-h-screen">
       ${this._sidebar('add-task')}
@@ -227,28 +238,33 @@ const Admin = {
     setTimeout(() => Components.initDragDrop('taskImg'), 100);
   },
 
-  handleSaveTask(e) {
+  async handleSaveTask(e) {
     e.preventDefault();
-    const user = Auth.getCurrentUser();
+    const user = await Auth.getCurrentUser();
     const title = document.getElementById('taskTitle').value.trim();
     const content = document.getElementById('taskContent').value.trim();
     const excerpt = document.getElementById('taskExcerpt').value.trim();
     const category = document.getElementById('taskCategory').value;
-    const isImportant = document.getElementById('taskImportant').checked;
-    const isBreaking = document.getElementById('taskBreaking').checked;
+    const is_important = document.getElementById('taskImportant').checked;
+    const is_breaking = document.getElementById('taskBreaking').checked;
     const imageUrl = document.getElementById('taskImageUrl').value.trim();
     const image = imageUrl || window.image_taskImg || '';
     if (!title || !content) { Utils.showToast('عنوان و توضیحات الزامی هستند', 'error'); return; }
-    Store.create('tasks', { title, content, excerpt, category, isImportant, isBreaking, image, authorId: user.id });
-    Utils.showToast('تکلیف با موفقیت منتشر شد', 'success');
-    location.hash = '#/admin/tasks-list';
+    try {
+      await Store.create('tasks', { title, content, excerpt, category, is_important, is_breaking, image, author_id: user.id });
+      Utils.showToast('تکلیف با موفقیت منتشر شد', 'success');
+      location.hash = '#/admin/tasks-list';
+    } catch (err) {
+      Utils.showToast('خطا در ذخیره تکلیف: ' + err.message, 'error');
+    }
   },
 
   // ---- MANAGE USERS ----
-  manageUsers() {
-    if (!Auth.requireAdmin()) return;
-    const users = Store.getAll('users');
-    Pages.render(`
+  async manageUsers() {
+    if (!(await Auth.requireAdmin())) return;
+    const users = await Store.getAll('profiles');
+    const currentUser = await Auth.getCurrentUser();
+    await Pages.renderWithNav(`
     ${this._mobileHeader()}
     <div class="flex min-h-screen">
       ${this._sidebar('users')}
@@ -256,7 +272,6 @@ const Admin = {
         <div class="max-w-5xl">
           <div class="flex items-center justify-between mb-6">
             <h1 class="text-xl sm:text-2xl font-black">مدیریت کاربران</h1>
-            <button onclick="Admin.showAddAdmin()" class="btn btn-red btn-sm">افزودن مدیر</button>
           </div>
           <div class="bg-white rounded-2xl shadow-sm overflow-hidden admin-table-wrap">
             <div class="overflow-x-auto">
@@ -276,23 +291,23 @@ const Admin = {
                     <tr class="border-b last:border-0">
                       <td class="px-4 py-3" data-label="نام">
                         <div class="flex items-center gap-2">
-                          <div class="w-8 h-8 rounded-full ${u.role === 'admin' ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'} flex items-center justify-center font-bold text-xs">${u.fullName.charAt(0)}</div>
-                          <span class="font-medium">${Utils.escapeHtml(u.fullName)}</span>
+                          <div class="w-8 h-8 rounded-full ${u.role === 'admin' ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'} flex items-center justify-center font-bold text-xs">${u.full_name.charAt(0)}</div>
+                          <span class="font-medium">${Utils.escapeHtml(u.full_name)}</span>
                         </div>
                       </td>
                       <td class="px-4 py-3 text-gray-500" data-label="نام کاربری">@${Utils.escapeHtml(u.username)}</td>
                       <td class="px-4 py-3" data-label="نقش">
                         <span class="badge ${u.role === 'admin' ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'}">${u.role === 'admin' ? 'مدیر' : 'کاربر'}</span>
                       </td>
-                      <td class="px-4 py-3 text-gray-400 text-xs" data-label="تاریخ">${Utils.persianDate(u.createdAt)}</td>
+                      <td class="px-4 py-3 text-gray-400 text-xs" data-label="تاریخ">${Utils.persianDate(u.created_at)}</td>
                       <td class="px-4 py-3" data-label="وضعیت">
                         ${u.banned ? '<span class="badge bg-red-100 text-red-600">مسدود</span>' : '<span class="badge bg-green-100 text-green-600">فعال</span>'}
                       </td>
                       <td class="px-4 py-3" data-label="عملیات">
                         <div class="admin-row-actions flex items-center gap-1">
-                          ${u.id !== Auth.getCurrentUser().id ? `
+                          ${u.id !== currentUser.id ? `
                             <button onclick="Admin.toggleBan('${u.id}')" class="btn btn-ghost btn-sm text-xs ${u.banned ? 'text-green-500' : 'text-red-500'}">${u.banned ? 'رفع مسدودی' : 'مسدود کردن'}</button>
-                            ${u.role !== 'admin' ? `<button onclick="Admin.toggleComment('${u.id}')" class="btn btn-ghost btn-sm text-xs ${u.canComment === false ? 'text-green-500' : 'text-orange-500'}">${u.canComment === false ? 'فعال کردن نظر' : 'غیرفعال کردن نظر'}</button>` : ''}
+                            ${u.role !== 'admin' ? `<button onclick="Admin.toggleComment('${u.id}')" class="btn btn-ghost btn-sm text-xs ${u.can_comment === false ? 'text-green-500' : 'text-orange-500'}">${u.can_comment === false ? 'فعال کردن نظر' : 'غیرفعال کردن نظر'}</button>` : ''}
                             ${u.role !== 'admin' ? `<button onclick="Admin.makeAdmin('${u.id}')" class="btn btn-ghost btn-sm text-xs text-blue-500">ارتقا به مدیر</button>` : ''}
                           ` : '<span class="text-xs text-gray-400">شما</span>'}
                         </div>
@@ -308,67 +323,38 @@ const Admin = {
     </div>`);
   },
 
-  toggleBan(id) {
-    const user = Store.getById('users', id);
-    if (user) { Store.update('users', id, { banned: !user.banned }); Utils.showToast(user.banned ? 'کاربر از مسدودی خارج شد' : 'کاربر مسدود شد', 'success'); this.manageUsers(); }
+  async toggleBan(id) {
+    const user = await Store.getById('profiles', id);
+    if (user) {
+      await Store.update('profiles', id, { banned: !user.banned });
+      Utils.showToast(user.banned ? 'کاربر از مسدودی خارج شد' : 'کاربر مسدود شد', 'success');
+      await this.manageUsers();
+    }
   },
 
-  toggleComment(id) {
-    const user = Store.getById('users', id);
-    if (user) { Store.update('users', id, { canComment: user.canComment === false ? true : false }); Utils.showToast('وضعیت نظردهی تغییر کرد', 'success'); this.manageUsers(); }
+  async toggleComment(id) {
+    const user = await Store.getById('profiles', id);
+    if (user) {
+      await Store.update('profiles', id, { can_comment: user.can_comment === false ? true : false });
+      Utils.showToast('وضعیت نظردهی تغییر کرد', 'success');
+      await this.manageUsers();
+    }
   },
 
-  makeAdmin(id) {
-    if (confirm('آیا مطمئن هستید؟')) { Store.update('users', id, { role: 'admin' }); Utils.showToast('کاربر به مدیر ارتقا یافت', 'success'); this.manageUsers(); }
-  },
-
-  showAddAdmin() {
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
-    modal.id = 'addAdminModal';
-    modal.innerHTML = `
-      <div class="modal-content">
-        <h3 class="text-lg font-bold mb-4">افزودن مدیر جدید</h3>
-        <form onsubmit="Admin.handleAddAdmin(event)">
-          <div class="mb-3">
-            <label class="block text-sm font-medium text-gray-700 mb-1">نام کامل</label>
-            <input type="text" id="adminFullName" class="input" required>
-          </div>
-          <div class="mb-3">
-            <label class="block text-sm font-medium text-gray-700 mb-1">نام کاربری</label>
-            <input type="text" id="adminUsername" class="input" required>
-          </div>
-          <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">رمز عبور</label>
-            <input type="password" id="adminPassword" class="input" required>
-          </div>
-          <div class="flex gap-2">
-            <button type="submit" class="btn btn-red">ایجاد</button>
-            <button type="button" onclick="document.getElementById('addAdminModal').remove()" class="btn btn-outline">لغو</button>
-          </div>
-        </form>
-      </div>`;
-    document.body.appendChild(modal);
-  },
-
-  handleAddAdmin(e) {
-    e.preventDefault();
-    const fullName = document.getElementById('adminFullName').value;
-    const username = document.getElementById('adminUsername').value;
-    const password = document.getElementById('adminPassword').value;
-    const result = Auth.register(fullName, username, password);
-    if (result.error) { Utils.showToast(result.error, 'error'); return; }
-    Store.update('users', result.user.id, { role: 'admin' });
-    document.getElementById('addAdminModal').remove();
-    Utils.showToast('مدیر جدید ایجاد شد', 'success');
-    this.manageUsers();
+  async makeAdmin(id) {
+    if (confirm('آیا مطمئن هستید؟')) {
+      await Store.update('profiles', id, { role: 'admin' });
+      Utils.showToast('کاربر به مدیر ارتقا یافت', 'success');
+      await this.manageUsers();
+    }
   },
 
   // ---- MANAGE COMMENTS ----
-  manageComments() {
-    if (!Auth.requireAdmin()) return;
-    const allComments = Store.getAll('comments').sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    Pages.render(`
+  async manageComments() {
+    if (!(await Auth.requireAdmin())) return;
+    const allComments = await Store.getAll('comments');
+    allComments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    await Pages.renderWithNav(`
     ${this._mobileHeader()}
     <div class="flex min-h-screen">
       ${this._sidebar('comments')}
@@ -377,18 +363,19 @@ const Admin = {
           <h1 class="text-xl sm:text-2xl font-black mb-6">مدیریت نظرات</h1>
           <div class="space-y-3 stagger">
             ${allComments.length === 0 ? Components.emptyState('نظری ثبت نشده است.') :
-              allComments.map(c => {
-                const user = Store.getById('users', c.userId);
-                const entity = Store.getById(c.entityType === 'news' ? 'news' : 'tasks', c.entityId);
+              await Promise.all(allComments.map(async c => {
+                const user = c.user_id ? await Store.getProfile(c.user_id) : null;
+                const entityType = c.entity_type === 'news' ? 'news' : 'tasks';
+                const entity = await Store.getById(entityType, c.entity_id);
                 return `
                 <div class="bg-white rounded-xl p-4 shadow-sm flex items-start gap-4">
-                  <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-sm flex-shrink-0">${user ? user.fullName.charAt(0) : '?'}</div>
+                  <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-sm flex-shrink-0">${user ? user.full_name.charAt(0) : '?'}</div>
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2 mb-1 flex-wrap">
-                      <span class="font-medium text-sm">${user ? Utils.escapeHtml(user.fullName) : 'ناشناس'}</span>
+                      <span class="font-medium text-sm">${user ? Utils.escapeHtml(user.full_name) : 'ناشناس'}</span>
                       <span class="text-xs text-gray-400">در</span>
                       <span class="text-xs text-gray-500 truncate max-w-xs">${entity ? Utils.escapeHtml(entity.title) : 'حذف شده'}</span>
-                      <span class="text-xs text-gray-400">${Utils.timeAgo(c.createdAt)}</span>
+                      <span class="text-xs text-gray-400">${Utils.timeAgo(c.created_at)}</span>
                       ${c.approved ? '<span class="badge bg-green-100 text-green-600 text-xs">تأیید شده</span>' : '<span class="badge bg-yellow-100 text-yellow-600 text-xs">در انتظار</span>'}
                     </div>
                     <p class="text-sm text-gray-600 mb-2">${Utils.escapeHtml(c.text)}</p>
@@ -398,24 +385,25 @@ const Admin = {
                     </div>
                   </div>
                 </div>`;
-              }).join('')}
+              })).then(items => items.join(''))}
           </div>
         </div>
       </div>
     </div>`);
   },
 
-  approveComment(id) { Store.approveComment(id); Utils.showToast('نظر تأیید شد', 'success'); this.manageComments(); },
+  async approveComment(id) { await Store.approveComment(id); Utils.showToast('نظر تأیید شد', 'success'); await this.manageComments(); },
 
-  deleteComment(id) {
-    if (confirm('آیا از حذف این نظر مطمئن هستید؟')) { Store.remove('comments', id); Utils.showToast('نظر حذف شد', 'success'); this.manageComments(); }
+  async deleteComment(id) {
+    if (confirm('آیا از حذف این نظر مطمئن هستید؟')) { await Store.remove('comments', id); Utils.showToast('نظر حذف شد', 'success'); await this.manageComments(); }
   },
 
   // ---- MANAGE NEWS ----
-  manageNews() {
-    if (!Auth.requireAdmin()) return;
-    const news = Store.getAll('news').sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    Pages.render(`
+  async manageNews() {
+    if (!(await Auth.requireAdmin())) return;
+    const news = await Store.getAll('news');
+    news.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    await Pages.renderWithNav(`
     ${this._mobileHeader()}
     <div class="flex min-h-screen">
       ${this._sidebar('admin-news')}
@@ -444,12 +432,12 @@ const Admin = {
                       <td class="px-4 py-3" data-label="دسته"><span class="badge text-xs" style="background:${Utils.getCategoryColor(n.category).bg};color:${Utils.getCategoryColor(n.category).text}">${n.category}</span></td>
                       <td class="px-4 py-3" data-label="وضعیت">
                         <div class="flex gap-1">
-                          ${n.isImportant ? '<span class="badge bg-red-100 text-red-600 text-xs">مهم</span>' : ''}
-                          ${n.isBreaking ? '<span class="badge text-xs" style="background:#FEF3C7;color:#92400E">فوری</span>' : ''}
-                          ${!n.isImportant && !n.isBreaking ? '<span class="badge bg-gray-100 text-gray-500 text-xs">عادی</span>' : ''}
+                          ${n.is_important ? '<span class="badge bg-red-100 text-red-600 text-xs">مهم</span>' : ''}
+                          ${n.is_breaking ? '<span class="badge text-xs" style="background:#FEF3C7;color:#92400E">فوری</span>' : ''}
+                          ${!n.is_important && !n.is_breaking ? '<span class="badge bg-gray-100 text-gray-500 text-xs">عادی</span>' : ''}
                         </div>
                       </td>
-                      <td class="px-4 py-3 text-gray-400 text-xs" data-label="تاریخ">${Utils.persianDate(n.createdAt)}</td>
+                      <td class="px-4 py-3 text-gray-400 text-xs" data-label="تاریخ">${Utils.persianDate(n.created_at)}</td>
                       <td class="px-4 py-3" data-label="عملیات">
                         <div class="admin-row-actions flex gap-1">
                           <a href="#/news/${n.id}" class="btn btn-ghost btn-sm text-xs text-blue-500">مشاهده</a>
@@ -468,10 +456,11 @@ const Admin = {
   },
 
   // ---- MANAGE TASKS ----
-  manageTasks() {
-    if (!Auth.requireAdmin()) return;
-    const tasks = Store.getAll('tasks').sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    Pages.render(`
+  async manageTasks() {
+    if (!(await Auth.requireAdmin())) return;
+    const tasks = await Store.getAll('tasks');
+    tasks.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    await Pages.renderWithNav(`
     ${this._mobileHeader()}
     <div class="flex min-h-screen">
       ${this._sidebar('admin-tasks')}
@@ -500,12 +489,12 @@ const Admin = {
                       <td class="px-4 py-3" data-label="دسته"><span class="badge text-xs" style="background:${Utils.getCategoryColor(t.category).bg};color:${Utils.getCategoryColor(t.category).text}">${t.category}</span></td>
                       <td class="px-4 py-3" data-label="وضعیت">
                         <div class="flex gap-1">
-                          ${t.isImportant ? '<span class="badge bg-red-100 text-red-600 text-xs">مهم</span>' : ''}
-                          ${t.isBreaking ? '<span class="badge text-xs" style="background:#FEF3C7;color:#92400E">فوری</span>' : ''}
-                          ${!t.isImportant && !t.isBreaking ? '<span class="badge bg-gray-100 text-gray-500 text-xs">عادی</span>' : ''}
+                          ${t.is_important ? '<span class="badge bg-red-100 text-red-600 text-xs">مهم</span>' : ''}
+                          ${t.is_breaking ? '<span class="badge text-xs" style="background:#FEF3C7;color:#92400E">فوری</span>' : ''}
+                          ${!t.is_important && !t.is_breaking ? '<span class="badge bg-gray-100 text-gray-500 text-xs">عادی</span>' : ''}
                         </div>
                       </td>
-                      <td class="px-4 py-3 text-gray-400 text-xs" data-label="تاریخ">${Utils.persianDate(t.createdAt)}</td>
+                      <td class="px-4 py-3 text-gray-400 text-xs" data-label="تاریخ">${Utils.persianDate(t.created_at)}</td>
                       <td class="px-4 py-3" data-label="عملیات">
                         <div class="admin-row-actions flex gap-1">
                           <a href="#/tasks/${t.id}" class="btn btn-ghost btn-sm text-xs text-blue-500">مشاهده</a>
@@ -523,12 +512,16 @@ const Admin = {
     </div>`);
   },
 
-  deleteItem(collection, id) {
+  async deleteItem(collection, id) {
     if (confirm('آیا از حذف مطمئن هستید؟')) {
-      Store.remove(collection, id);
-      Utils.showToast('حذف شد', 'success');
-      if (collection === 'news') this.manageNews();
-      else this.manageTasks();
+      try {
+        await Store.remove(collection, id);
+        Utils.showToast('حذف شد', 'success');
+        if (collection === 'news') await this.manageNews();
+        else await this.manageTasks();
+      } catch (err) {
+        Utils.showToast('خطا در حذف', 'error');
+      }
     }
   },
 
@@ -569,7 +562,6 @@ const Admin = {
         <a href="#/admin/comments" class="${active === 'comments' ? 'active' : ''}">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
           مدیریت نظرات
-          ${Store.getPendingComments().length > 0 ? `<span class="mr-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">${Store.getPendingComments().length}</span>` : ''}
         </a>
         <a href="#/admin/users" class="${active === 'users' ? 'active' : ''}">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
@@ -612,34 +604,29 @@ const Admin = {
     if (overlay) overlay.classList.remove('open');
   },
 
-  _pendingCommentsPreview() {
-    const pending = Store.getPendingComments().slice(0, 5);
-    if (pending.length === 0) return '<p class="text-sm text-gray-400">نظر در انتظاری وجود ندارد.</p>';
-    return pending.map(c => {
-      const user = Store.getById('users', c.userId);
-      return `
+  _pendingCommentsPreview(pending) {
+    if (!pending || pending.length === 0) return '<p class="text-sm text-gray-400">نظر در انتظاری وجود ندارد.</p>';
+    return pending.slice(0, 5).map(c => `
       <div class="flex items-center gap-3 py-2 border-b last:border-0">
-        <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-xs font-bold flex-shrink-0">${user ? user.fullName.charAt(0) : '?'}</div>
+        <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-xs font-bold flex-shrink-0">?</div>
         <div class="flex-1 min-w-0">
           <p class="text-sm truncate">${Utils.escapeHtml(c.text)}</p>
-          <p class="text-xs text-gray-400">${user ? user.fullName : 'ناشناس'} · ${Utils.timeAgo(c.createdAt)}</p>
+          <p class="text-xs text-gray-400">${Utils.timeAgo(c.created_at)}</p>
         </div>
         <button onclick="Admin.approveComment('${c.id}')" class="text-green-500 hover:text-green-600 text-xs font-medium">تأیید</button>
-      </div>`;
-    }).join('');
+      </div>`).join('');
   },
 
-  _latestNewsPreview() {
-    const news = Store.getAll('news').slice(0, 5);
-    if (news.length === 0) return '<p class="text-sm text-gray-400">خبری ثبت نشده.</p>';
+  _latestNewsPreview(news) {
+    if (!news || news.length === 0) return '<p class="text-sm text-gray-400">خبری ثبت نشده.</p>';
     return news.map(n => `
       <div class="flex items-center gap-3 py-2 border-b last:border-0">
         <div class="flex-1 min-w-0">
           <p class="text-sm font-medium truncate">${Utils.escapeHtml(n.title)}</p>
-          <p class="text-xs text-gray-400">${Utils.persianDate(n.createdAt)}</p>
+          <p class="text-xs text-gray-400">${Utils.persianDate(n.created_at)}</p>
         </div>
-        ${n.isImportant ? '<span class="badge bg-red-100 text-red-600 text-xs">مهم</span>' : ''}
-        ${n.isBreaking ? '<span class="badge text-xs" style="background:#FEF3C7;color:#92400E">فوری</span>' : ''}
+        ${n.is_important ? '<span class="badge bg-red-100 text-red-600 text-xs">مهم</span>' : ''}
+        ${n.is_breaking ? '<span class="badge text-xs" style="background:#FEF3C7;color:#92400E">فوری</span>' : ''}
       </div>
     `).join('');
   }

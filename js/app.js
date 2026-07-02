@@ -19,7 +19,7 @@ const Router = {
     return { segments, params, raw: path };
   },
 
-  handleRoute() {
+  async handleRoute() {
     try {
       const { segments, params } = this.getCurrentRoute();
       const route = segments[0] || 'login';
@@ -32,38 +32,38 @@ const Router = {
       document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.add('hidden'));
 
       switch (route) {
-        case 'login': Pages.login(); break;
-        case 'register': Pages.register(); break;
-        case 'home': Pages.home(); break;
+        case 'login': await Pages.login(); break;
+        case 'register': await Pages.register(); break;
+        case 'home': await Pages.home(); break;
         case 'news':
-          if (id) Pages.newsDetail(id);
-          else Pages.newsList();
+          if (id) await Pages.newsDetail(id);
+          else await Pages.newsList();
           break;
         case 'tasks':
-          if (id) Pages.taskDetail(id);
-          else Pages.tasksList();
+          if (id) await Pages.taskDetail(id);
+          else await Pages.tasksList();
           break;
-        case 'important': Pages.importantNews(); break;
-        case 'search': Pages.search(); break;
-        case 'profile': Pages.profile(); break;
+        case 'important': await Pages.importantNews(); break;
+        case 'search': await Pages.search(); break;
+        case 'profile': await Pages.profile(); break;
         case 'admin':
-          if (!Auth.requireAuth()) return;
-          if (!id) Admin.dashboard();
+          if (!(await Auth.requireAuth())) return;
+          if (!id) await Admin.dashboard();
           else if (id === 'news') {
-            if (segments[2] === 'new') Admin.addNews();
-            else Admin.manageNews();
+            if (segments[2] === 'new') await Admin.addNews();
+            else await Admin.manageNews();
           }
           else if (id === 'tasks') {
-            if (segments[2] === 'new') Admin.addTask();
-            else Admin.manageTasks();
+            if (segments[2] === 'new') await Admin.addTask();
+            else await Admin.manageTasks();
           }
-          else if (id === 'users') Admin.manageUsers();
-          else if (id === 'comments') Admin.manageComments();
-          else if (id === 'news-list') Admin.manageNews();
-          else if (id === 'tasks-list') Admin.manageTasks();
-          else Admin.dashboard();
+          else if (id === 'users') await Admin.manageUsers();
+          else if (id === 'comments') await Admin.manageComments();
+          else if (id === 'news-list') await Admin.manageNews();
+          else if (id === 'tasks-list') await Admin.manageTasks();
+          else await Admin.dashboard();
           break;
-        default: Pages.login();
+        default: await Pages.login();
       }
     } catch (e) {
       console.error('Route error:', e);
@@ -85,12 +85,19 @@ const Router = {
   }
 };
 
-// Store scroll handler reference to prevent memory leak
 let _scrollHandler = null;
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   try {
-    Store.init();
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      const profile = await Store.getProfile(session.user.id);
+      if (profile && profile.banned) {
+        await sb.auth.signOut();
+      } else {
+        Store._currentUserProfile = profile;
+      }
+    }
     Router.init();
   } catch (e) {
     console.error('Init error:', e);

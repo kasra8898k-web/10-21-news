@@ -1,7 +1,7 @@
 const Components = {
-  navbar() {
-    const user = Auth.getCurrentUser();
-    const isAdmin = Auth.isAdmin();
+  navbar(user) {
+    if (!user) return '';
+    const isAdmin = user.role === 'admin';
     return `
     <nav class="navbar" id="mainNavbar">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -21,11 +21,10 @@ const Components = {
               <input type="text" id="searchInput" placeholder="جستجو..." class="input py-2 pr-10 pl-4 w-48 focus:w-64 transition-all duration-300 text-sm" dir="rtl">
               <svg class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </div>
-            ${user ? `
             <div class="dropdown">
               <button onclick="Components.toggleDropdown(this)" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-all">
-                <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-sm">${user.fullName.charAt(0)}</div>
-                <span class="text-sm font-medium text-gray-700">${user.fullName}</span>
+                <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-sm">${user.full_name.charAt(0)}</div>
+                <span class="text-sm font-medium text-gray-700">${user.full_name}</span>
                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
               </button>
               <div class="dropdown-menu hidden">
@@ -34,9 +33,7 @@ const Components = {
                 <hr class="my-1 border-gray-100">
                 <button onclick="Auth.logout()" class="block w-full text-right px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-all">خروج</button>
               </div>
-            </div>` : `
-            <a href="#/login" class="btn btn-outline btn-sm">ورود</a>
-            <a href="#/register" class="btn btn-red btn-sm">ثبت‌نام</a>`}
+            </div>
           </div>
           <button onclick="Components.toggleMobileMenu()" class="md:hidden p-2 rounded-lg hover:bg-gray-100">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -59,12 +56,8 @@ const Components = {
         <a href="#/important" onclick="Components.closeMobileMenu()" class="mobile-link">اخبار مهم</a>
         ${isAdmin ? '<a href="#/admin" onclick="Components.closeMobileMenu()" class="mobile-link text-red-600 font-medium">پنل مدیریت</a>' : ''}
         <hr class="my-2">
-        ${user ? `
         <a href="#/profile" onclick="Components.closeMobileMenu()" class="mobile-link">پروفایل</a>
         <button onclick="Auth.logout(); Components.closeMobileMenu()" class="block w-full text-right px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 font-medium">خروج</button>
-        ` : `
-        <a href="#/login" onclick="Components.closeMobileMenu()" class="mobile-link">ورود</a>
-        <a href="#/register" onclick="Components.closeMobileMenu()" class="mobile-link">ثبت‌نام</a>`}
       </div>
     </div>`;
   },
@@ -103,17 +96,18 @@ const Components = {
   newsCard(item, type = 'news') {
     const catColor = Utils.getCategoryColor(item.category);
     const route = type === 'news' ? 'news' : 'tasks';
+    const createdAt = item.created_at || item.createdAt;
     return `
     <a href="#/${route}/${item.id}" class="block bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden card-hover border border-gray-100/80" style="box-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.03)">
       <div class="aspect-video bg-gradient-to-br from-gray-50 to-gray-100 relative overflow-hidden">
         ${item.image ?
-          `<img src="${item.image}" alt="${Utils.escapeHtml(item.title)}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105">` :
+          `<img src="${item.image}" alt="${Utils.escapeHtml(item.title)}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center\\'><svg class=\\'w-12 h-12 text-gray-200\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'1.5\\' d=\\'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z\\'></path></svg></div>'">` :
           `<div class="w-full h-full flex items-center justify-center">
             <svg class="w-12 h-12 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
           </div>`}
         <div class="absolute top-3 right-3 flex gap-2">
-          ${item.isImportant ? '<span class="badge text-white text-xs" style="background:linear-gradient(135deg,#C8102E,#A50D24);box-shadow:0 2px 8px rgba(200,16,46,.3)">مهم</span>' : ''}
-          ${item.isBreaking ? '<span class="badge text-xs" style="background:linear-gradient(135deg,#FACC15,#EAB308);color:#713F12;box-shadow:0 2px 8px rgba(234,179,8,.25)">خبر فوری</span>' : ''}
+          ${item.is_important ? '<span class="badge text-white text-xs" style="background:linear-gradient(135deg,#C8102E,#A50D24);box-shadow:0 2px 8px rgba(200,16,46,.3)">مهم</span>' : ''}
+          ${item.is_breaking ? '<span class="badge text-xs" style="background:linear-gradient(135deg,#FACC15,#EAB308);color:#713F12;box-shadow:0 2px 8px rgba(234,179,8,.25)">خبر فوری</span>' : ''}
         </div>
         <div class="absolute bottom-3 right-3 badge text-xs" style="background:${catColor.bg};color:${catColor.text};border:1px solid ${catColor.border};backdrop-filter:blur(8px)">${item.category}</div>
       </div>
@@ -121,20 +115,21 @@ const Components = {
         <h3 class="font-bold text-gray-900 mb-2 line-clamp-2 leading-7">${Utils.escapeHtml(item.title)}</h3>
         <p class="text-sm text-gray-500/80 mb-3 line-clamp-2 leading-6">${Utils.escapeHtml(item.excerpt || Utils.truncate(item.content, 100))}</p>
         <div class="flex items-center justify-between text-xs text-gray-400">
-          <span>${Utils.timeAgo(item.createdAt)}</span>
+          <span>${Utils.timeAgo(createdAt)}</span>
           <span class="text-red-500 hover:text-red-600 font-medium transition-colors">ادامه مطلب →</span>
         </div>
       </div>
     </a>`;
   },
 
-  commentSection(entityType, entityId) {
-    const user = Auth.getCurrentUser();
-    const comments = Store.getApprovedComments(entityType, entityId);
+  async commentSection(entityType, entityId) {
+    const user = await Auth.getCurrentUser();
+    const comments = await Store.getApprovedComments(entityType, entityId);
+    const canComment = user && user.can_comment !== false;
     return `
     <div class="mt-10 border-t border-gray-100 pt-8">
       <h3 class="section-label mb-5">نظرات (${comments.length})</h3>
-      ${user ? (user.canComment !== false ? `
+      ${user ? (canComment ? `
       <div class="mb-6">
         <textarea id="commentText" class="input mb-3" placeholder="نظر خود را بنویسید..." rows="3"></textarea>
         <button onclick="Pages.submitComment('${entityType}', '${entityId}')" class="btn btn-red btn-sm">ارسال نظر</button>
@@ -142,20 +137,20 @@ const Components = {
       </div>` : '<p class="text-sm text-gray-400 mb-6">امکان ثبت نظر برای شما غیرفعال شده است.</p>') : '<p class="text-sm text-gray-400 mb-6">برای ثبت نظر وارد شوید.</p>'}
       <div class="space-y-4 stagger" id="commentsContainer">
         ${comments.length === 0 ? '<p class="text-sm text-gray-400 text-center py-6">هنوز نظری ثبت نشده است.</p>' :
-          comments.map(c => {
-            const cu = Store.getById('users', c.userId);
+          await Promise.all(comments.map(async c => {
+            const cu = c.user_id ? await Store.getProfile(c.user_id) : null;
             return `
             <div class="flex gap-3 p-4 rounded-xl bg-gray-50/60 slide-up">
-              <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0" style="background:linear-gradient(135deg,rgba(200,16,46,.08),rgba(200,16,46,.18));color:#C8102E">${cu ? cu.fullName.charAt(0) : '?'}</div>
+              <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0" style="background:linear-gradient(135deg,rgba(200,16,46,.08),rgba(200,16,46,.18));color:#C8102E">${cu ? cu.full_name.charAt(0) : '?'}</div>
               <div class="flex-1">
                 <div class="flex items-center gap-2 mb-1">
-                  <span class="font-medium text-sm text-gray-900">${cu ? Utils.escapeHtml(cu.fullName) : 'کاربر حذف شده'}</span>
-                  <span class="text-xs text-gray-400">${Utils.timeAgo(c.createdAt)}</span>
+                  <span class="font-medium text-sm text-gray-900">${cu ? Utils.escapeHtml(cu.full_name) : 'کاربر حذف شده'}</span>
+                  <span class="text-xs text-gray-400">${Utils.timeAgo(c.created_at)}</span>
                 </div>
                 <p class="text-sm text-gray-600 leading-6">${Utils.escapeHtml(c.text)}</p>
               </div>
             </div>`;
-          }).join('')}
+          })).then(items => items.join(''))}
       </div>
     </div>`;
   },
