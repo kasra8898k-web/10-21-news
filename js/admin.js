@@ -599,13 +599,17 @@ const Admin = {
   },
 
   openSidebar() {
-    document.getElementById('adminSidebar').classList.add('open');
-    document.getElementById('adminSidebarOverlay').classList.add('open');
+    const sidebar = document.getElementById('adminSidebar');
+    const overlay = document.getElementById('adminSidebarOverlay');
+    if (sidebar) sidebar.classList.add('open');
+    if (overlay) overlay.classList.add('open');
   },
 
   closeSidebar() {
-    document.getElementById('adminSidebar').classList.remove('open');
-    document.getElementById('adminSidebarOverlay').classList.remove('open');
+    const sidebar = document.getElementById('adminSidebar');
+    const overlay = document.getElementById('adminSidebarOverlay');
+    if (sidebar) sidebar.classList.remove('open');
+    if (overlay) overlay.classList.remove('open');
   },
 
   _pendingCommentsPreview() {

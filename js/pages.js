@@ -18,12 +18,12 @@ const Pages = {
   initNavbarScroll() {
     const navbar = document.getElementById('mainNavbar');
     if (!navbar) return;
-    const handler = () => {
+    if (_scrollHandler) window.removeEventListener('scroll', _scrollHandler);
+    _scrollHandler = () => {
       if (window.scrollY > 10) navbar.classList.add('scrolled');
       else navbar.classList.remove('scrolled');
     };
-    window.removeEventListener('scroll', handler);
-    window.addEventListener('scroll', handler);
+    window.addEventListener('scroll', _scrollHandler);
   },
 
   initSearch() {

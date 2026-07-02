@@ -87,13 +87,17 @@ const Components = {
   },
 
   toggleMobileMenu() {
-    document.getElementById('mobileMenu').classList.add('open');
-    document.getElementById('mobileOverlay').classList.add('open');
+    const mm = document.getElementById('mobileMenu');
+    const mo = document.getElementById('mobileOverlay');
+    if (mm) mm.classList.add('open');
+    if (mo) mo.classList.add('open');
   },
 
   closeMobileMenu() {
-    document.getElementById('mobileMenu').classList.remove('open');
-    document.getElementById('mobileOverlay').classList.remove('open');
+    const mm = document.getElementById('mobileMenu');
+    const mo = document.getElementById('mobileOverlay');
+    if (mm) mm.classList.remove('open');
+    if (mo) mo.classList.remove('open');
   },
 
   newsCard(item, type = 'news') {

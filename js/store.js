@@ -81,7 +81,12 @@ const Store = {
 
   getCurrentUser() {
     if (this._db.currentUser) {
-      return this.getById('users', this._db.currentUser.id);
+      const user = this.getById('users', this._db.currentUser.id);
+      if (!user) {
+        this._db.currentUser = null;
+        this._save();
+      }
+      return user;
     }
     return null;
   },

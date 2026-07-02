@@ -85,6 +85,9 @@ const Router = {
   }
 };
 
+// Store scroll handler reference to prevent memory leak
+let _scrollHandler = null;
+
 document.addEventListener('DOMContentLoaded', () => {
   try {
     Store.init();

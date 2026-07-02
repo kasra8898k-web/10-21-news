@@ -222,7 +222,7 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
   .admin-table-wrap tbody tr:last-child{border-bottom:none}
   .admin-table-wrap tbody td{display:flex;align-items:center;justify-content:space-between;padding:4px 0;border:none;width:100%;text-align:left}
   .admin-table-wrap tbody td:first-child{font-weight:600;font-size:15px}
-  .admin-table-wrap tbody td::before{font-size:11px;color:#9ca3af;font-weight:500;min-width:60px}
+  .admin-table-wrap tbody td::before{content:attr(data-label);font-size:11px;color:#9ca3af;font-weight:500;min-width:60px}
   .admin-table-wrap .admin-row-actions{flex-wrap:wrap;gap:4px;justify-content:flex-start}
 }
 
