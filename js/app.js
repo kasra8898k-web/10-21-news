@@ -68,7 +68,7 @@ const Router = {
     } catch (e) {
       console.error('Route error:', e);
       document.getElementById('app').innerHTML = `
-        <div class="min-h-screen flex items-center justify-center">
+        <div class="min-h-screen flex items-center justify-center px-4">
           <div class="text-center">
             <h1 class="text-xl font-bold mb-2">خطا در بارگذاری صفحه</h1>
             <p class="text-gray-500 text-sm mb-4">${Utils.escapeHtml(e.message)}</p>
@@ -98,16 +98,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         Store._currentUserProfile = profile;
       }
     }
-    Router.init();
   } catch (e) {
-    console.error('Init error:', e);
-    document.getElementById('app').innerHTML = `
-      <div class="min-h-screen flex items-center justify-center">
-        <div class="text-center">
-          <h1 class="text-xl font-bold mb-2">خطا در بارگذاری برنامه</h1>
-          <p class="text-gray-500 text-sm mb-4">لطفاً کش مرورگر را پاک کرده و دوباره تلاش کنید.</p>
-          <button onclick="localStorage.clear(); location.reload();" class="btn btn-red">پاک کردن داده و بارگذاری مجدد</button>
-        </div>
-      </div>`;
+    console.error('Init session error:', e);
   }
+  Router.init();
 });

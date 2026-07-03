@@ -96,5 +96,9 @@ const Utils = {
 
   getAllCategoryNames() {
     return this.getCategoryGroups().flatMap(g => g.items);
+  },
+
+  fakeEmail(username) {
+    return (username || '').trim().toLowerCase().replace(/[^a-z0-9._-]/g, '') + '@1021news.local';
   }
 };

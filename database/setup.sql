@@ -141,10 +141,13 @@ begin
   insert into public.profiles (id, full_name, username, role)
   values (
     new.id,
-    coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'username'),
-    coalesce(new.raw_user_meta_data->>'username', new.email),
+    coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'username', 'کاربر'),
+    coalesce(new.raw_user_meta_data->>'username', split_part(new.email, '@', 1)),
     coalesce(new.raw_user_meta_data->>'role', 'user')
-  );
+  )
+  on conflict (id) do update set
+    full_name = excluded.full_name,
+    username = excluded.username;
   return new;
 end;
 $$ language plpgsql security definer;
@@ -156,17 +159,19 @@ create or replace trigger on_auth_user_created
 -- =====================================================
 -- INDEXES for performance
 -- =====================================================
-create index idx_news_created at (created_at desc);
-create index idx_news_category on (category);
-create index idx_tasks_created at (created_at desc);
-create index idx_tasks_category on (category);
-create index idx_comments_entity on (entity_type, entity_id);
-create index idx_comments_approved on (approved);
-create index idx_profiles_username on (username);
+create index idx_news_created on public.news (created_at desc);
+create index idx_news_category on public.news (category);
+create index idx_tasks_created on public.tasks (created_at desc);
+create index idx_tasks_category on public.tasks (category);
+create index idx_comments_entity on public.comments (entity_type, entity_id);
+create index idx_comments_approved on public.comments (approved);
+create index idx_profiles_username on public.profiles (username);
 
 -- =====================================================
 -- SETUP COMPLETE
 -- After running this, create your admin user:
--- 1. Register a new account via the website
+-- 1. Register a new account via the website (username + password only, no email needed)
 -- 2. Run: UPDATE public.profiles SET role = 'admin' WHERE username = 'your_username';
+-- Note: Internally, usernames are converted to emails (e.g. user@1021news.local)
+--       for Supabase Auth compatibility. Users never see or interact with emails.
 -- =====================================================

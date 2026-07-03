@@ -407,14 +407,15 @@ const Pages = {
     const password = document.getElementById('loginPassword').value;
     btn.disabled = true;
     btn.textContent = 'در حال ورود...';
-    const result = await Auth.login(username, password);
-    if (result.error) {
-      Utils.showToast(result.error, 'error');
-      btn.disabled = false;
-      btn.textContent = 'ورود';
-    } else {
+    try {
+      await Auth.login(username, password);
       Utils.showToast('خوش آمدید!', 'success');
       Router.navigate('home');
+    } catch (err) {
+      Utils.showToast(err.message || 'خطا در ورود', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'ورود';
     }
   },
 
@@ -466,14 +467,15 @@ const Pages = {
     const password = document.getElementById('regPassword').value;
     btn.disabled = true;
     btn.textContent = 'در حال ثبت‌نام...';
-    const result = await Auth.register(fullName, username, password);
-    if (result.error) {
-      Utils.showToast(result.error, 'error');
-      btn.disabled = false;
-      btn.textContent = 'ثبت‌نام';
-    } else {
+    try {
+      await Auth.register(fullName, username, password);
       Utils.showToast('ثبت‌نام موفقیت‌آمیز بود!', 'success');
       Router.navigate('home');
+    } catch (err) {
+      Utils.showToast(err.message || 'خطا در ثبت‌نام', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'ثبت‌نام';
     }
   },
 
